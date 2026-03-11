@@ -1,0 +1,92 @@
+{
+  "epic": {
+    "title": "Search & Manage Cards",
+    "description": "Core functionality for searching, viewing, filtering, and managing card information across the system",
+    "jira_key": null,
+    "jira_url": null,
+    "created_at": "2026-03-11",
+    "synced_at": null
+  },
+  "stories": [
+    {
+      "id": "01",
+      "title": "Card Search Interface",
+      "file": "stories/01-card-search-interface.md",
+      "jira_key": null,
+      "jira_url": null,
+      "status": "pending",
+      "description": "Implement advanced search interface with filters for account, customer, card status and sort options",
+      "acceptance_criteria": "Users can search for cards using multiple filter options with typeahead autocomplete",
+      "synced_at": null,
+      "hash": null,
+      "needs_update": false,
+      "last_checked": null
+    },
+    {
+      "id": "02",
+      "title": "Search Results Table",
+      "file": "stories/02-search-results-table.md",
+      "jira_key": null,
+      "jira_url": null,
+      "status": "pending",
+      "description": "Display search results in organized, sortable table with pagination support",
+      "acceptance_criteria": "Search results display in table format with sorting, pagination, and selection capabilities",
+      "synced_at": null,
+      "hash": null,
+      "needs_update": false,
+      "last_checked": null
+    },
+    {
+      "id": "03",
+      "title": "View Card Details",
+      "file": "stories/03-view-card-details.md",
+      "jira_key": null,
+      "jira_url": null,
+      "status": "pending",
+      "description": "Display comprehensive card information with multiple sections and lazy-loaded content",
+      "acceptance_criteria": "Users can click on card to view detailed information with accordion sections",
+      "synced_at": null,
+      "hash": null,
+      "needs_update": false,
+      "last_checked": null
+    },
+    {
+      "id": "04",
+      "title": "Edit Card Information",
+      "file": "stories/04-edit-card-information.md",
+      "jira_key": null,
+      "jira_url": null,
+      "status": "pending",
+      "description": "Allow inline editing of card data with validation, save, and cancel functionality",
+      "acceptance_criteria": "Card details can be edited with proper validation and error handling",
+      "synced_at": null,
+      "hash": null,
+      "needs_update": false,
+      "last_checked": null
+    },
+    {
+      "id": "05",
+      "title": "Bulk Operations",
+      "file": "stories/05-bulk-operations.md",
+      "jira_key": null,
+      "jira_url": null,
+      "status": "pending",
+      "description": "Enable selection and bulk updates to multiple cards with confirmation workflows",
+      "acceptance_criteria": "Multiple cards can be selected and bulk operations applied with user confirmation",
+      "synced_at": null,
+      "hash": null,
+      "needs_update": false,
+      "last_checked": null
+    }
+  ],
+  "sync_status": {
+    "last_sync": null,
+    "last_error": null,
+    "publish_version": 1,
+    "status_workflow": {
+      "pending": "Story not yet published to Jira",
+      "synced": "Story published to Jira and hash matches",
+      "needs_update": "Story updated since last sync, needs re-publish"
+    }
+  }
+}

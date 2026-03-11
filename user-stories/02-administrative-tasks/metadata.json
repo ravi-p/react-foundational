@@ -1,0 +1,50 @@
+{
+  "epic": {
+    "title": "Administrative Tasks",
+    "description": "Administrative operations and tasks requiring elevated privileges and specialized access",
+    "jira_key": null,
+    "jira_url": null,
+    "created_at": "2026-03-11",
+    "synced_at": null
+  },
+  "stories": [
+    {
+      "id": "07",
+      "title": "Reset Card PIN",
+      "file": "stories/07-reset-card-pin.md",
+      "jira_key": null,
+      "jira_url": null,
+      "status": "pending",
+      "description": "Enable administrators to reset card PINs with authorization, confirmation, and audit logging",
+      "acceptance_criteria": "Administrators can reset card PINs with proper authorization and confirmation dialogs",
+      "synced_at": null,
+      "hash": null,
+      "needs_update": false,
+      "last_checked": null
+    },
+    {
+      "id": "08",
+      "title": "View Card Transaction History",
+      "file": "stories/08-view-card-transaction-history.md",
+      "jira_key": null,
+      "jira_url": null,
+      "status": "pending",
+      "description": "Provide administrators access to comprehensive transaction history with filtering, search, and pagination",
+      "acceptance_criteria": "Administrators can view complete transaction history with filtering and search capabilities",
+      "synced_at": null,
+      "hash": null,
+      "needs_update": false,
+      "last_checked": null
+    }
+  ],
+  "sync_status": {
+    "last_sync": null,
+    "last_error": null,
+    "publish_version": 1,
+    "status_workflow": {
+      "pending": "Story not yet published to Jira",
+      "synced": "Story published to Jira and hash matches",
+      "needs_update": "Story updated since last sync, needs re-publish"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "description": "User Stories Configuration - Feature-based Organization with Jira Integration",
+  "features": [
+    {
+      "id": "00",
+      "name": "Search & Manage Cards",
+      "key": "CARDS",
+      "description": "Core functionality for searching, viewing, and managing card information",
+      "stories": [
+        "01-card-search-interface.md",
+        "02-search-results-table.md",
+        "03-view-card-details.md",
+        "04-edit-card-information.md",
+        "05-bulk-operations.md"
+      ]
+    },
+    {
+      "id": "01",
+      "name": "Card Features",
+      "key": "FEAT",
+      "description": "Feature-specific functionality and requirements",
+      "stories": [
+        "06-direct-deposit-management.md"
+      ]
+    },
+    {
+      "id": "02",
+      "name": "Administrative Tasks",
+      "key": "ADMIN",
+      "description": "Administrative operations and card management tasks",
+      "stories": [
+        "07-reset-card-pin.md",
+        "08-view-card-transaction-history.md"
+      ]
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-03-11",
+    "lastUpdated": "2026-03-11",
+    "totalStories": 8
+  }
+}

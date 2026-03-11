@@ -1,0 +1,36 @@
+{
+  "epic": {
+    "title": "[Feature Area Epic Title]",
+    "description": "[Epic description and business context]",
+    "jira_key": null,
+    "jira_url": null,
+    "created_at": null,
+    "synced_at": null
+  },
+  "stories": [
+    {
+      "id": "01",
+      "title": "[Story Title]",
+      "file": "stories/[story-filename].md",
+      "jira_key": null,
+      "jira_url": null,
+      "status": "pending",
+      "description": "[Story description for Jira sync]",
+      "acceptance_criteria": "[Extracted from story file]",
+      "synced_at": null,
+      "hash": null,
+      "needs_update": false,
+      "last_checked": null
+    }
+  ],
+  "sync_status": {
+    "last_sync": null,
+    "last_error": null,
+    "publish_version": 1,
+    "status_workflow": {
+      "pending": "Story not yet published to Jira",
+      "synced": "Story published to Jira and hash matches",
+      "needs_update": "Story updated since last sync, needs re-publish"
+    }
+  }
+}
