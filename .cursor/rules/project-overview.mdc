@@ -1,0 +1,43 @@
+---
+description: Project overview, tech stack, and folder structure — always active for all files
+globs: 
+alwaysApply: true
+---
+
+# Project Overview
+
+React 19 + Vite + TypeScript (strict) frontend template.
+
+## Tech Stack
+- UI: MUI (Material UI)
+- State: Redux Toolkit + Context API
+- Routing: React Router v6
+- HTTP: Axios with global interceptors
+- Testing: Jest + React Testing Library
+- Linting: ESLint (Airbnb) + Prettier
+- Git Hooks: Husky + lint-staged
+
+## Folder Structure (Layer-Based)
+```
+src/
+├── assets/          # Static files
+├── components/      # Reusable components
+│   ├── common/      # Shared (Toast, Loading)
+│   └── error-boundary/
+├── constants/       # App constants
+├── contexts/        # Context providers
+├── hooks/           # Custom hooks
+├── pages/           # Page components
+├── routes/          # Router config
+├── services/api/    # Axios + API services
+├── store/slices/    # Redux store
+├── theme/           # MUI theme
+├── types/           # Global types
+└── utils/           # Utilities
+```
+
+## Path Alias
+Use `@/` → `src/` for all internal imports.
+
+## Import Order
+1. React → 2. Third-party → 3. Internal (`@/`) → 4. Styles

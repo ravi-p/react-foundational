@@ -1,0 +1,54 @@
+---
+description: React component creation rules — how to write components with MUI
+globs: src/components/**/*.tsx,src/pages/**/*.tsx
+alwaysApply: false
+---
+
+# React Component Rules
+
+## Component Pattern
+- Functional components ONLY — never class components
+- Arrow function syntax ONLY
+- Define props as TypeScript interface with `Props` suffix
+
+```tsx
+interface UserCardProps {
+  name: string;
+  email: string;
+  onEdit?: () => void;
+}
+
+const UserCard: React.FC<UserCardProps> = ({ name, email, onEdit }) => {
+  return (
+    <Box>
+      <Typography variant="h6">{name}</Typography>
+      <Typography variant="body2">{email}</Typography>
+      {onEdit && <Button onClick={onEdit}>Edit</Button>}
+    </Box>
+  );
+};
+
+export default UserCard;
+```
+
+## MUI Usage
+- Use MUI components for layout: `Box`, `Stack`, `Grid`, `Container`
+- Use `Typography` for all text — never raw `<p>`, `<h1>`, etc.
+- Use `Button`, `IconButton`, `TextField` for interactive elements
+- Apply styles through MUI's `sx` prop or `styled()` — not inline CSS objects
+- Use theme tokens: `theme.palette.primary.main`, `theme.spacing(2)`
+
+## File Naming
+- File: kebab-case (`user-card.tsx`)
+- Component: PascalCase (`UserCard`)
+- Directory: kebab-case (`user-card/`)
+
+## Accessibility (Default)
+- All `img` elements must have `alt` text
+- Interactive elements need `aria-label` when text content is not descriptive
+- Use semantic HTML elements within MUI components
+- Buttons must be keyboard accessible (MUI handles this by default)
+
+## Exports
+- Use default export for the component
+- Use named exports for related types/utilities

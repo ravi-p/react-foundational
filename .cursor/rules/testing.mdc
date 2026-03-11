@@ -1,0 +1,48 @@
+---
+description: Testing rules with Jest and React Testing Library
+globs: src/**/*.test.ts,src/**/*.test.tsx,src/**/*.spec.ts,src/**/*.spec.tsx
+alwaysApply: false
+---
+
+# Testing Rules
+
+## Setup
+- Jest + React Testing Library
+- Test files are co-located: `ComponentName.test.tsx`
+
+## Test Structure
+
+```tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import UserCard from './UserCard';
+
+describe('UserCard', () => {
+  const defaultProps = {
+    name: 'John Doe',
+    email: 'john@example.com',
+  };
+
+  it('should render user name and email', () => {
+    render(<UserCard {...defaultProps} />);
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('john@example.com')).toBeInTheDocument();
+  });
+
+  it('should call onEdit when edit button is clicked', async () => {
+    const onEdit = jest.fn();
+    render(<UserCard {...defaultProps} onEdit={onEdit} />);
+    await userEvent.click(screen.getByRole('button', { name: /edit/i }));
+    expect(onEdit).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+## Rules
+- Test BEHAVIOR, not implementation details
+- Prefer `screen.getByRole()` over `screen.getByTestId()`
+- Use `userEvent` over `fireEvent` for user interactions
+- Wrap components needing Redux/Router/Theme in appropriate providers
+- Do NOT test internal state — test what the user sees and does
+- One assertion per test when possible
+- Name tests descriptively: `it('should display error message when API fails')`

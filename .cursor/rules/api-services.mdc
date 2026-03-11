@@ -1,0 +1,44 @@
+---
+description: API service and Axios rules — how to work with HTTP calls
+globs: src/services/**/*.ts,src/services/**/*.tsx
+alwaysApply: false
+---
+
+# API Service Rules
+
+## Axios Instance
+- All HTTP requests MUST go through `@/services/api/axios-instance.ts`
+- NEVER import `axios` directly in components or pages
+- The shared instance has request and response interceptors pre-configured
+
+## Service File Pattern
+Create one service file per feature/domain:
+
+```typescript
+// src/services/api/user-service.ts
+import { apiClient } from '@/services/api/axios-instance';
+import { User, CreateUserPayload } from '@/types';
+
+const USER_ENDPOINTS = {
+  LIST: '/users',
+  BY_ID: (id: string) => `/users/${id}`,
+} as const;
+
+export const userService = {
+  getAll: () => apiClient.get<User[]>(USER_ENDPOINTS.LIST),
+  getById: (id: string) => apiClient.get<User>(USER_ENDPOINTS.BY_ID(id)),
+  create: (payload: CreateUserPayload) => apiClient.post<User>(USER_ENDPOINTS.LIST, payload),
+  update: (id: string, payload: Partial<User>) => apiClient.put<User>(USER_ENDPOINTS.BY_ID(id), payload),
+  delete: (id: string) => apiClient.delete(USER_ENDPOINTS.BY_ID(id)),
+};
+```
+
+## Interceptors
+- **Request interceptor** (`interceptors/request-interceptor.ts`): Auth token injection, content-type headers
+- **Response interceptor** (`interceptors/response-interceptor.ts`): Error normalization, 401 redirect, global logging
+- Do NOT modify interceptors without asking the user
+
+## Error Handling
+- API errors are caught and normalized by the response interceptor
+- Services should return the Axios response — let the calling code handle specific error states
+- Use try/catch in Redux thunks or component-level hooks for specific error handling

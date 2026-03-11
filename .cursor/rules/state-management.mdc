@@ -1,0 +1,101 @@
+---
+description: Redux Toolkit and state management rules
+globs: src/store/**/*.ts,src/store/**/*.tsx,src/contexts/**/*.ts,src/contexts/**/*.tsx
+alwaysApply: false
+---
+
+# State Management Rules
+
+## When to Use What
+| Use Case | Solution |
+|----------|----------|
+| Global shared state | Redux Toolkit |
+| Server/API data cache | Redux Toolkit (createAsyncThunk) |
+| Local component UI state | useState / useReducer |
+| Cross-cutting concerns (theme, auth, toast) | Context API |
+
+## Redux Toolkit Slice Pattern
+
+```typescript
+// src/store/slices/user-slice.ts
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { userService } from '@/services/api/user-service';
+import { User } from '@/types';
+
+interface UserState {
+  users: User[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: UserState = {
+  users: [],
+  loading: false,
+  error: null,
+};
+
+export const fetchUsers = createAsyncThunk('users/fetchAll', async (_, { rejectWithValue }) => {
+  try {
+    const response = await userService.getAll();
+    return response.data;
+  } catch (error) {
+    return rejectWithValue('Failed to fetch users');
+  }
+});
+
+const userSlice = createSlice({
+  name: 'users',
+  initialState,
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUsers.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchUsers.fulfilled, (state, action: PayloadAction<User[]>) => { state.loading = false; state.users = action.payload; })
+      .addCase(fetchUsers.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+  },
+});
+
+export const { clearError } = userSlice.actions;
+export default userSlice.reducer;
+```
+
+## Typed Hooks
+Always use typed hooks from `@/store/hooks`:
+```typescript
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+// NEVER use raw useDispatch or useSelector
+```
+
+## Context API Pattern
+```typescript
+// src/contexts/AuthContext.tsx
+import React, { createContext, useContext, useState, useMemo } from 'react';
+
+interface AuthContextType {
+  isAuthenticated: boolean;
+  login: (token: string) => void;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const value = useMemo(() => ({
+    isAuthenticated,
+    login: (token: string) => { localStorage.setItem('token', token); setIsAuthenticated(true); },
+    logout: () => { localStorage.removeItem('token'); setIsAuthenticated(false); },
+  }), [isAuthenticated]);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
+};
+```
