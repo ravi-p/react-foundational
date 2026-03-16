@@ -363,6 +363,292 @@ agent orchestrators/end_to_end_workflow.md
 
 ---
 
+### Agent 4: Reverse Engineering (Legacy Modernization)
+
+**Purpose:** Analyze legacy JSP applications and generate 6 architectural discovery documents
+
+**Location:** `.github/agents/reverse_engineering_prompt.md`
+
+**Input:**
+- Legacy JSP/Java files or other legacy codebase
+- Feature/module entry file path
+- JavaScript files (jQuery, vanilla JS)
+- Form actions and backend mappings
+
+**Output:**
+- 6 separate Markdown documents in `output/analysis/`:
+  1. `1_User_Flow_Document.md` - Complete user journeys with flows and error scenarios
+  2. `2_Screen_Inventory.md` - UI components, forms, buttons, and input fields catalog
+  3. `3_FE_Business_Logic_Document.md` - Client-side validations and business rules
+  4. `4_UI_State_and_Session_Handling.md` - Session data, form state, and cookies
+  5. `5_Backend_API_Call_Mapping.md` - All backend endpoints and API specifications
+  6. `6_Site_Map_Architecture_Diagram.md` - Mermaid architecture diagrams
+
+**Processing Steps:**
+1. Parse legacy JSP/JSX files recursively (includes, linked JavaScript)
+2. Crawl form actions and AJAX call definitions
+3. Extract UI components, input fields, buttons, modals, tables
+4. Identify client-side validations (jQuery, vanilla JS)
+5. Map Java Scriptlets to session data and server state
+6. Document all backend endpoint calls with payload structure
+7. Generate 6 standalone Markdown files (one per document type)
+8. Create Mermaid diagrams for architecture visualization
+
+**Status Field:** `generated`
+
+**Key Deliverables:**
+- Complete architectural documentation of legacy system
+- Foundation for modernization requirements
+- Input for subsequent agents (Generate User Stories)
+- Clear migration path to React/TypeScript
+
+---
+
+### Agent 5: Integrate UX Screens
+
+**Purpose:** Autonomously integrate UX screens from external repository into main React application
+
+**Location:** `.github/agents/integrate_ux_screens.md`
+
+**Input:**
+- UX repository: `C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh`
+- Screen components (React TSX with MUI)
+- User story mappings
+- Screen documentation
+
+**Output:**
+- Integrated components in `src/components/` and `src/pages/`
+- Updated routing configuration (`src/routes/route-config.tsx`)
+- Updated state management (Redux slices)
+- Updated services (API calls, Axios integrations)
+- Integration Summary document (`output/INTEGRATION_SUMMARY.md`)
+- Screen-Component mapping (`output/SCREEN_COMPONENT_MAPPING.md`)
+
+**Processing Steps:**
+
+**Phase 1: Repository Validation**
+- Pull latest from UX repository
+- Verify React 19.x and MUI 7.3.9 compatibility
+- Check dependency version alignment
+- Validate TypeScript configuration
+
+**Phase 2: Screen Mapping**
+- Parse user story files to identify screen references
+- Cross-reference screens with user story requirements
+- Generate screen-to-story mapping document
+- Flag incomplete or missing screens
+
+**Phase 3: Component Integration**
+- Copy React components from UX repo to main repo
+- Fix import paths (use `@/` aliases, update relative paths)
+- Update MUI imports to correct syntax
+- Fix custom component references
+- Add missing prop type definitions
+
+**Phase 4: Routing Integration**
+- Create routes for each screen
+- Map routes to user stories
+- Update route-config.tsx with new page routes
+- Generate breadcrumb configurations
+
+**Phase 5: State Management**
+- Create Redux slices for screen states
+- Define async thunks for API calls
+- Connect components to Redux store
+- Update useAppDispatch and useAppSelector usage
+
+**Phase 6: API Integration**
+- Wire API calls to services
+- Replace placeholder API calls with real endpoints
+- Add error handling and loading states
+- Test API connectivity
+
+**Status Field:** `integrated`
+
+**Quality Checks:**
+- ✅ TypeScript: Zero errors
+- ✅ ESLint: Zero violations
+- ✅ Imports: All use `@/` aliases
+- ✅ Components: Arrow functions only
+- ✅ Props: Fully typed interfaces
+- ✅ Accessibility: ARIA labels present
+
+---
+
+### Agent 6: Resolve Integration Issues
+
+**Purpose:** Autonomously fix code quality, test, and integration issues found during review
+
+**Location:** `.github/agents/resolve_integration_issues.md`
+
+**Input:**
+- Code Review Report (`output/CODE_REVIEW_REPORT.md`)
+- Test failure logs
+- TypeScript errors
+- ESLint violations
+- Integration validation results
+
+**Output:**
+- Fixed component and service files
+- Passing test suite (100% critical coverage)
+- 0 TypeScript errors
+- 0 ESLint violations
+- Updated Redux slices
+- Updated API services
+- Re-run review checklist with all issues resolved
+
+**Processing Steps:**
+
+**Phase 1: Issue Triage & Analysis**
+- Parse CODE_REVIEW_REPORT.md
+- Categorize by severity: BLOCKERS → HIGH → MEDIUM → LOW
+- Extract root causes
+- Create fix plan with dependencies
+
+**Phase 2: Fix TypeScript Errors**
+- Run `npm run type-check`
+- Add missing interface definitions to `src/types/index.ts`
+- Update Redux slice state types
+- Update component prop interfaces
+- Fix service return types
+- Re-validate after each fix
+
+**Phase 3: Fix ESLint Violations**
+- Run `npm run lint`
+- Convert class components to arrow functions
+- Fix import order violations
+- Replace relative paths with `@/` aliases
+- Add missing TypeScript annotations
+- Auto-fix with `npm run lint:fix` where applicable
+
+**Phase 4: Fix Test Failures**
+- Run `npm run test`
+- Debug failing test cases
+- Update test mocks if needed
+- Ensure React Testing Library best practices
+- Verify test coverage > 60%
+
+**Phase 5: Fix Integration Issues**
+- Verify Redux store integration
+- Check API service configurations
+- Validate routing setup
+- Test context provider setup
+- Verify interceptor logic
+
+**Phase 6: Verification & Re-Review**
+- Run full build: `npm run build`
+- Run full test suite: `npm run test`
+- Re-run linting: `npm run lint`
+- Re-run type checking: `npm run type-check`
+- Generate updated review report
+- Confirm all issues resolved
+
+**Status Field:** `resolved`
+
+**Exit Criteria:**
+- ✅ All BLOCKERS fixed
+- ✅ All HIGH PRIORITY issues fixed
+- ✅ MEDIUM/LOW issues documented (can defer)
+- ✅ Build succeeds
+- ✅ Tests pass
+- ✅ 0 TypeScript errors
+- ✅ 0 critical ESLint violations
+
+---
+
+### Agent 7: Review & Merge UX Integration
+
+**Purpose:** Review integrated UX screens and safely merge to main branch with quality gates
+
+**Location:** `.github/agents/review_and_merge_ux_integration.md`
+
+**Input:**
+- Integration Summary (`output/INTEGRATION_SUMMARY.md`)
+- Screen Component Mapping (`output/SCREEN_COMPONENT_MAPPING.md`)
+- Feature branch: `feature/integrate-ux-screens`
+- Git diff of all changes
+
+**Output:**
+- Code Review Report (`output/CODE_REVIEW_REPORT.md`)
+- Test Coverage Report (`output/TEST_COVERAGE_REPORT.md`)
+- Accessibility Audit Report (`output/ACCESSIBILITY_AUDIT.md`)
+- Approval decision document
+- Merged changes to main branch (if approved)
+
+**Processing Steps:**
+
+**Phase 1: Pre-Review Verification**
+- Confirm integration agent completed all phases
+- Verify all artifacts exist (summaries, mappings)
+- Check components copied to src/
+- Validate routing configuration
+- Confirm Redux slices created
+- Alert on incomplete sections
+
+**Phase 2: Code Quality Review**
+- Run TypeScript validation (`npm run type-check`)
+- Run ESLint (`npm run lint`)
+- Check Prettier formatting
+- Audit import paths (enforce `@/` aliases)
+- Verify prop type definitions
+- Check for hardcoded values
+
+**Phase 3: Test Validation**
+- Run full test suite (`npm run test`)
+- Measure test coverage
+- Identify untested code paths
+- Verify critical path coverage > 80%
+- Check test quality (no skipped tests)
+
+**Phase 4: Accessibility Audit**
+- Check all buttons have aria-labels
+- Verify semantic HTML usage
+- Test keyboard navigation
+- Check color contrast ratios
+- Validate WCAG AA compliance
+- Document accessibility findings
+
+**Phase 5: Integration Validation**
+- Test routing between pages
+- Verify Redux state persistence
+- Validate API calls working
+- Check error boundary coverage
+- Test interceptor functionality
+- Verify Redux DevTools integration
+
+**Phase 6: Approval & Merge**
+- Generate comprehensive review report
+- List all findings (blockers, warnings, notes)
+- Provide approval recommendation
+- If approved:
+  - Delete feature branch
+  - Create PR with review findings
+  - Merge to main
+  - Create release tag (optional)
+- If blocked:
+  - Document blocking issues
+  - Reference resolve_integration_issues agent
+  - Recommend next steps
+
+**Status Field:** `merged` (if approved)
+
+**Quality Gates (Must Pass to Merge):**
+- ✅ 0 TypeScript errors
+- ✅ 0 ESLint errors
+- ✅ All tests passing
+- ✅ Coverage > 60%
+- ✅ No hardcoded API URLs
+- ✅ All prop types defined
+- ✅ No relative imports
+- ✅ Accessibility audit passed
+
+**Return Status:**
+- `merged` - Changes approved and merged
+- `blocked` - Issues found, needs resolve_integration_issues agent
+- `review` - Manual review required
+
+---
+
 ## 📂 Project Structure
 
 ```
