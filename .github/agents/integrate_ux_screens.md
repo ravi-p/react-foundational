@@ -1,16 +1,16 @@
 ---
 name: integrate_ux_screens
-description: "Integrate UX screens from external repo into main React app, wire up components based on user stories and screen mapping"
+description: "Integrate UX screens from external repo into main React app, wire up components based on config and user stories"
 ---
 
-# UX Screen Integration Agent
+# UX Screen Integration Agent (Generic)
 
-> **Purpose:** Autonomously integrate React component screens from UX team's Corpay-UI-Refresh repository into the main Card Maintenance System React application, mapping them to user stories and wiring up routing, state management, and layouts.
+> **Purpose:** Autonomously integrate React component screens from external UX repository into main React application, mapping them to user stories and wiring up routing, state management, and layouts.
 >
 > **Input:** 
-> - UX screens pushed to `C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh`
-> - UX team documentation with screen-to-user-story mapping
-> - Updated user story files from `output/user_stories/*.md`
+> - UX repository location (specified in config.json), ask if not found
+> - Configuration file `.github\agents\conf\ux-integration-config.json` with component mappings
+> - User story files from `user-stories/`
 >
 > **Output:** 
 > - Integrated components in `src/components/` and `src/pages/`
@@ -19,138 +19,234 @@ description: "Integrate UX screens from external repo into main React app, wire 
 > - Component-to-user-story mapping documentation
 >
 > **Prerequisites:** 
-> - UX repo already cloned at fixed location
-> - UX components use React 19.x and MUI 7.3.9 (same as main repo)
-> - User stories documented with screen references
+> - UX repo already exists at configured location
+> - Components use same React version and TypeScript as main repo
+> - User stories documented with screen references in config.json
 
 ## Agent Instructions
 
+### Configuration (REQUIRED BEFORE RUNNING)
+
+Create/update **`ux-integration-config.json`** in `.github\agents\conf\` with the following structure:
+
+```json
+{
+  "project": {
+    "name": "Your Project Name"
+  },
+  "uxRepository": {
+    "path": "C:\\path\\to\\ux\\repo",
+    "sourceFolder": "client/src",
+    "refreshBranch": "main"
+  },
+  "componentMapping": [
+    {
+      "uxComponentPath": "components/card-search/CardSearch.tsx",
+      "targetPath": "src/components/card-search/CardSearch.tsx",
+      "userStories": ["US-01", "US-02"],
+      "isPage": false,
+      "route": null
+    },
+    {
+      "uxComponentPath": "pages/CardDetail.tsx",
+      "targetPath": "src/pages/card-detail.tsx",
+      "userStories": ["US-03"],
+      "isPage": true,
+      "route": {
+        "path": "/card/:cardToken",
+        "label": "Card Details",
+        "breadcrumbs": ["Home", "Cards", "Details"]
+      }
+    }
+  ],
+  "dependencies": {
+    "react": "^19.0.0",
+    "typescript": "^5.0.0",
+    "@mui/material": "^7.3.9",
+    "react-router-v6": true,
+    "redux": false
+  },
+  "apiBasePattern": "/api/v1",
+  "services": [
+    {
+      "name": "card-service",
+      "endpoint": "/cards"
+    }
+  ]
+}
+
+```json
+{
+  "project": {
+    "name": "Your Project Name"
+  },
+  "uxRepository": {
+    "path": "C:\\path\\to\\ux\\repo",
+    "sourceFolder": "client/src",
+    "refreshBranch": "main"
+  },
+  "componentMapping": [
+    {
+      "uxComponentPath": "components/card-search/CardSearch.tsx",
+      "targetPath": "src/components/card-search/CardSearch.tsx",
+      "userStories": ["US-01", "US-02"],
+      "isPage": false,
+      "route": null
+    },
+    {
+      "uxComponentPath": "pages/CardDetail.tsx",
+      "targetPath": "src/pages/card-detail.tsx",
+      "userStories": ["US-03"],
+      "isPage": true,
+      "route": {
+        "path": "/card/:cardToken",
+        "label": "Card Details",
+        "breadcrumbs": ["Home", "Cards", "Details"]
+      }
+    }
+  ],
+  "dependencies": {
+    "react": "^19.0.0",
+    "typescript": "^5.0.0",
+    "@mui/material": "^7.3.9",
+    "react-router-v6": true,
+    "redux": false
+  },
+  "apiBasePattern": "/api/v1",
+  "services": [
+    {
+      "name": "card-service",
+      "endpoint": "/cards"
+    }
+  ]
+}
+```
+
 ### Mission
-Pull latest screen components from UX team's repository (already cloned), map them to approved user stories, integrate into main React app with proper routing and state management, and ensure accessibility/TypeScript standards compliance. UX team maintains the screens; developer's job is to wire them up with APIs and state management.
+Pull latest screen components from configured UX repository, map them to approved user stories, integrate into main React app with proper routing and state management, and ensure accessibility/TypeScript standards compliance. Configuration (not hardcoded values) drives all integration decisions.
 
 ### Phase 1: UX Repository Update
 
-#### 1.1 Pull Latest Changes from UX Repository
-```bash
-# UX repo is already cloned at this location
-cd C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh
+#### 1.1 Read Configuration
+- Load `ux-integration-config.json` from `.github\agents\conf\`
+- Extract:
+  - `uxRepository.path` - location of external UX repo
+  - `uxRepository.sourceFolder` - source folder in UX repo (e.g., "client/src")
+  - `componentMapping` - array of components to integrate
+  - `dependencies` - expected versions of React, TypeScript, etc.
 
-# Fetch and update from remote
+#### 1.2 Pull Latest Changes from UX Repository
+```bash
+cd [uxRepository.path from config]
 git fetch origin
-git pull origin main
+git pull origin [refreshBranch from config]
 ```
 
-#### 1.2 Verify UX Repo Structure
-- Confirm structure matches `/client/src/components/` and `/client/src/pages/`
-- Check `package.json` in root directory
-- Check for `client/src/tsconfig.json` TypeScript setup
-- Ensure components use MUI v7.3.9 (matches main repo)
-- Verify React 19.x installed
+#### 1.3 Verify UX Repo Structure
+- Confirm source folder exists: `[uxRepository.path]/[sourceFolder]/`
+- Check `package.json` versions match config.dependencies
+- Verify React, TypeScript match specified versions
+- Flag any dependency mismatches
 
-#### 1.3 Compare Dependency Versions
-```bash
-# Verify compatible versions between UX and Main repos
-cat "C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh\package.json" | grep -E "react|typescript|@mui"
-cat "c:\Users\2000181447\D\Repo\react-foundational-main\package.json" | grep -E "react|typescript|@mui"
-```
-- Alert if React version differs (must be 19.x)
-- Alert if MUI differs from 7.3.9
-- Flag any missing critical dependencies (Redux, React Router, Axios)
+#### 1.4 Validate Component Files
+For each component in `componentMapping`:
+- Verify source exists: `[uxRepository.path]/[sourceFolder]/[uxComponentPath]`
+- Confirm component is TypeScript (`.tsx` or `.ts`)
+- Check file has default or named export
+- Flag missing components before proceeding
 
 ---
 
-### Phase 2: Screen Mapping & Documentation Review
+### Phase 2: Screen Mapping & Component List
 
-#### 2.1 Read Updated Screen Inventory and User Stories
-- UX team updates user stories with screen mapping details in:
-  - `C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh\client\src\` (screen components)
-  - Or review updated documentation in project (check for SCREEN_MAPPING.md or similar)
-- Extract list of screens with metadata:
-  ```
-  Screen Name | Component File | User Stories | Routes | Status
-  Card Search | CardSearch.tsx | US-01, US-02 | /search | Ready
-  Card Details | CardDetail.tsx | US-03 | /card/:token | Ready
-  ```
-
-#### 2.2 Cross-Reference with Main Repo User Stories
-For each screen, determine which user stories it implements:
-- Read user story files from `output/user_stories/` in main repo
-- Match screen name/components to story requirements
-- Create mapping:
-  ```
-  CardSearchInterface.tsx 
-    → US-01: Card Search Interface
-    → US-02: Search Results Table
-  ```
-- Flag screens without matching user stories (requires clarification)
-
-#### 2.3 Review Screen Completeness
-Check UX documentation for:
-- Component acceptance criteria met?
-- API endpoint specifications documented?
-- Validation rules implemented?
-- Accessibility attributes included?
-- Test coverage included?
-- Missing components identified?
-
-#### 2.4 Create/Update Screen Mapping Document
-Generate/update mapping file: `output/SCREEN_COMPONENT_MAPPING.md`
-```markdown
-# Screen to User Story Mapping (Updated from UX Repo)
-
-| User Story | Component Name | File Path | Routes | Status | Notes |
-|---|---|---|---|---|---|
-| US-01 | CardSearchInterface | client/src/components/card-search/CardSearchInterface.tsx | /search | Ready | From UX Repo |
-| US-02 | SearchResultsTable | client/src/components/card-search/SearchResultsTable.tsx | /search | Ready | From UX Repo |
-| US-03 | CardDetailView | client/src/pages/CardDetail.tsx | /card/:token | Ready | From UX Repo |
-| ... | | | | | |
+#### 2.1 Read Component Configuration
+From `./.github/agents/conf/ux-integration-config.json`, extract `componentMapping` array:
+```json
+[
+  {
+    "uxComponentPath": "components/search/Search.tsx",
+    "targetPath": "src/components/search/Search.tsx",
+    "userStories": ["US-01", "US-02"],
+    "isPage": false,
+    "route": null
+  },
+  {
+    "uxComponentPath": "pages/Detail.tsx",
+    "targetPath": "src/pages/detail.tsx",
+    "userStories": ["US-03"],
+    "isPage": true,
+    "route": {
+      "path": "/detail/:id",
+      "label": "Details",
+      "breadcrumbs": ["Home", "Details"]
+    }
+  }
+]
 ```
+
+#### 2.2 Cross-Reference with User Stories
+For each component in mapping:
+- Read corresponding user story files from `user-stories/` or `output/user_stories/`
+- Verify component implements stories listed in `userStories` array
+- Flag stories not implemented
+- Flag components without story references
+
+#### 2.3 Validate Configuration
+Ensure all components in mapping:
+- Have valid `uxComponentPath` (file exists in UX repo)
+- Have valid `targetPath` (where file will be copied)
+- List at least one user story
+- If `isPage: true`, have route configuration
+- If `isPage: false`, have `route: null`
+
+#### 2.4 Summary & Validation Report
+Create summary:
+```
+Components to integrate: [count]
+Pages (route-ready): [count]
+Components (non-routable): [count]
+Total user stories: [count]
+Missing user story refs: [if any]
+```
+
+---
 
 ---
 
 ### Phase 3: Component Integration from UX Repository
 
 #### 3.1 Copy Components from UX Repository
+For each component in `componentMapping`:
 ```bash
-# Copy component files from UX repo (client/src/) to main repo (src/)
-# UX Repo location: C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh\client\src
+# Generic pattern - loop through each mapping entry:
+# Source: [uxRepository.path]/[uxRepository.sourceFolder]/[componentMapping[i].uxComponentPath]
+# Target: [componentMapping[i].targetPath]
 
-# Windows PowerShell - Copy components
-Copy-Item -Path "C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh\client\src\components\*" `
-          -Destination "c:\Users\2000181447\D\Repo\react-foundational-main\src\components\" `
-          -Recurse -Force
-
-# Copy pages
-Copy-Item -Path "C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh\client\src\pages\*" `
-          -Destination "c:\Users\2000181447\D\Repo\react-foundational-main\src\pages\" `
-          -Recurse -Force
-
-# Optional: Copy shared types if UX team maintains types in client/src
-Copy-Item -Path "C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh\client\src\types\*" `
-          -Destination "c:\Users\2000181447\D\Repo\react-foundational-main\src\types\" `
+# Example (from config):
+Copy-Item -Path "[uxRepository.path]/[sourceFolder]/[uxComponentPath]" `
+          -Destination "[targetPath]" `
           -Recurse -Force
 ```
 
-**Note:** Only copy `client/src/` folder contents. Do NOT copy `server/`, `shared/`, or `tsconfig.json` from UX repo.
+**Rules:**
+- Only copy files listed in `componentMapping` array
+- Preserve folder structure from UX repo
+- Do NOT copy UX repo's `tsconfig.json`, `package.json`, or build files
+- Create target directories if they don't exist
 
 #### 3.2 Verify Imports & Fix Path Issues
 For each copied component, check and fix:
-- **Import paths:** Ensure `@/` alias is used (not relative paths like `../../../`)
-- **MUI imports:** Confirm correct import syntax
-  ```typescript
-  // ✅ Correct
-  import { Box, Typography, Button } from '@mui/material';
-  
-  // ❌ Wrong - change to above
-  import Box from '@mui/material/Box';
-  ```
+- **Import paths:** Ensure `@/` alias is used (not relative paths)
+- **Framework imports:** Verify correct import syntax for configured framework
+  - If config.dependencies includes `@mui/material`, verify MUI imports
+  - If config includes other UI library, verify those imports
 - **Custom component imports:** Update to use `@/` alias
   ```typescript
   // Before (from UX repo context)
-  import UserCard from '../../../components/UserCard';
+  import Component from '../../../components/Component';
   
   // After (main repo)
-  import { UserCard } from '@/components/common/user-card/UserCard';
+  import { Component } from '@/components/folder/Component';
   ```
 
 #### 3.3 TypeScript Validation
@@ -158,28 +254,28 @@ Run type checking on copied files:
 ```bash
 npx tsc --noEmit src/components/ src/pages/
 ```
-- Fix any type errors:
-  - Missing prop interfaces
-  - Incorrect component props
-  - Return type mismatches
-  - Missing React.FC type annotations
-- Add missing interfaces to `src/types/index.ts` if needed
+- Fix any type errors
+- Add missing interfaces to `src/types/index.ts`
+- Verify all props are properly typed
 
-#### 3.4 ESLint & Code Standards
+#### 3.4 Code Quality Standards
 ```bash
 npx eslint src/components/ src/pages/ --fix
 npx prettier --write src/components/ src/pages/
 ```
 - Auto-fix formatting issues
-- Flag violations (e.g., class components, relative imports)
-- Verify no styles imported as CSS (must use MUI theme system)
+- Flag violations specific to project standards
 
 #### 3.5 Verify Component Exports
-Check each component file:
+For each component:
 ```typescript
-// ✅ Correct: Default export as named arrow function
-const CardSearch: React.FC<CardSearchProps> = () => { ... };
-export default CardSearch;
+// ✅ Correct: Default export or named export with React.FC typing
+const MyComponent: React.FC<MyComponentProps> = () => { ... };
+export default MyComponent;
+
+// OR named export
+export const MyComponent: React.FC<MyComponentProps> = () => { ... };
+
 
 // ✅ Also correct: Named export
 export const CardSearch: React.FC<CardSearchProps> = () => { ... };
@@ -193,111 +289,86 @@ export default function CardSearch() { ... }
 ### Phase 4: Routing Integration
 
 #### 4.1 Update Route Configuration
-Edit `src/routes/route-config.tsx`:
-- Add new routes for integrated screens
-- Map to corresponding user stories
+For components with `isPage: true` in config:
+- Read `componentMapping` from `ux-integration-config.json`
+- For each component where `isPage: true`, extract route from `route` property
+- Update `src/routes/route-config.tsx` to add new routes
 - Example:
   ```typescript
   export const routeConfig: RouteConfig[] = [
-    // Search & Manage Cards (US-01, US-02, US-03)
     {
-      path: '/search',
-      component: CardSearchPage,
-      label: 'Search Cards',
-      userStories: ['US-01', 'US-02'],
-      breadcrumbs: ['Home', 'Search Cards']
+      path: '[route.path from config]',
+      component: [ImportedComponent],
+      label: '[route.label from config]',
+      userStories: [from config.userStories],
+      breadcrumbs: [from route.breadcrumbs]
     },
-    {
-      path: '/card/:cardToken',
-      component: CardDetailPage,
-      label: 'Card Details',
-      userStories: ['US-03'],
-      breadcrumbs: ['Home', 'Cards', 'Details']
-    },
-    // ... more routes
+    // ... more routes from config
   ];
   ```
 
-#### 4.2 Update RouterComponent (AppRouter.tsx)
+#### 4.2 Update Router Component (AppRouter.tsx)
 - Import new page components
-- Add Route elements to handle new paths
-- Implement error boundaries around new routes
-- Test routing with React Router Dev Tools
+- Add Route elements matching paths from config
+- Wrap routes with ErrorBoundary component
+- Verify routing links match config paths
 
 #### 4.3 Navigation Integration
-Update navigation menus/breadcrumbs:
-- Edit `src/components/common/` navigation components
-- Add links to new screens
-- Ensure back navigation works correctly
-- Test deep linking (direct URL access)
+Update top navigation/menu:
+- Add navigation links for new routes (from `route.label` in config)
+- Test breadcrumb generation (from `route.breadcrumbs` in config)
+- Verify back navigation works
+- Test deep linking with config-defined paths
 
 ---
 
 ### Phase 5: State Management Wiring
 
 #### 5.1 Identify API Dependencies
-For each integrated component, find API calls:
-- Search in component for `fetch()`, `axios`, `.then()`, `useEffect` with URLs
-- Map API endpoints to user stories
-- Example:
-  ```
-  CardSearch.tsx calls:
-    - GET /Blam/accounts/{accountName}
-    - GET /Blam/account/{accountId}/customers
-    - POST /Blam/search
-  ```
+From `./.github/agents/conf/ux-integration-config.json`, read `services` array:
+```json
+"services": [
+  { "name": "service-name", "endpoint": "/api/endpoint" },
+  { "name": "user-service", "endpoint": "/api/users" }
+]
+```
+- For each service, create or verify service file
+- Map API calls in components to service methods
+- Use `apiBasePattern` from config for endpoint prefixes
 
 #### 5.2 Create/Update Service Files
-Verify or create service file for each API endpoint:
+For each entry in config.services:
 ```bash
-# Check if service exists
-ls src/services/api/*-service.ts
-
-# Create if missing: src/services/api/card-service.ts
+# Create: src/services/api/[name]-service.ts
+# Using apiBasePattern from config
 ```
-- Service example:
+- Service structure:
   ```typescript
   import axios from '@/services/api/axios-instance';
   
-  export const cardService = {
-    search: (params) => axios.post('/search', { /* ... */ }),
-    getCardDetail: (token) => axios.get(`/getCardDetail?cardToken=${token}`),
-    updateCardBasic: (data) => axios.post('/updateCardBasic', data),
+  const baseEndpoint = '[config.apiBasePattern][config.endpoint]';
+  
+  export const [name]Service = {
+    method1: (...) => axios.post(`${baseEndpoint}/path`, ...),
+    method2: (...) => axios.get(`${baseEndpoint}/path/:id`, ...)
   };
   ```
 
 #### 5.3 Replace Hardcoded API Calls
-In each component, replace direct API calls:
-```typescript
-// Before: Direct axios call in component
-const response = await axios.post('/Blam/search', { ... });
+In each integrated component:
+- Replace inline axios/fetch calls with service methods
+- Use `apiBasePattern` from config for endpoint construction
+- Update all API endpoint strings
 
-// After: Use service
-const response = await cardService.search({ ... });
-```
+#### 5.4 Wire State Management (if configured)
+If config.dependencies includes `redux`:
+- Check if Redux slices exist for components
+- Create slices if missing
+- Wire components using `useAppDispatch` and `useAppSelector`
 
-#### 5.4 Wire Redux State (if applicable)
-For global state (search results, selected cards, etc.):
-- Check if Redux slice exists in `src/store/slices/`
-- Create slice if missing:
-  ```typescript
-  // src/store/slices/card-search-slice.ts
-  const cardSearchSlice = createSlice({
-    name: 'cardSearch',
-    initialState: { results: [], filters: {}, loading: false },
-    reducers: { ... },
-    extraReducers: (builder) => { ... }
-  });
-  ```
-- Wire components to Redux:
-  ```typescript
-  const dispatch = useAppDispatch();
-  const { results } = useAppSelector(state => state.cardSearch);
-  ```
-
-#### 5.5 Wire Context API (if applicable)
+#### 5.5 Wire Context API (if configured)
 For UI-level state (theme, auth, toasts):
-- Verify context exists in `src/contexts/`
+- Verify contexts exist in `src/contexts/`
 - Wire components to consume context:
   ```typescript
   const { showToast } = useToast();
@@ -321,159 +392,157 @@ npx axe-core src/components/ src/pages/
   - Color contrast ratio ≥ 4.5:1
 
 #### 6.2 Add Missing ARIA Attributes
-For each component, add:
+For each component, ensure:
 ```typescript
-// Buttons
-<Button aria-label="Search for cards">Search</Button>
+// All buttons have accessible labels
+<Button aria-label="[descriptive action]">Text</Button>
 
-// Form inputs
-<TextField aria-label="Enter card number" placeholder="Card #" />
+// Form fields connected to labels
+<label htmlFor="fieldId">Label Text</label>
+<input id="fieldId" type="text" />
 
-// Dynamic content
-<div role="status" aria-live="polite">Loading...</div>
+// Dynamic content has live regions
+<div role="status" aria-live="polite">Feedback message</div>
 
-// Dropdowns
-<Select aria-label="Filter by status">...</Select>
+// Dropdown/select elements accessible
+<select aria-label="[accessible label]">...</select>
 ```
 
-#### 6.3 Test Keyboard Navigation
-- Tab through all interactive elements
-- Enter/Space activates buttons
-- Arrow keys navigate dropdowns/menus
-- Escape closes modals
-- Focus indicators visible throughout
+#### 6.3 Code Quality Checks
+- Run TypeScript checks: `npx tsc --noEmit`
+- Run linter: `npx eslint src/components/ src/pages/`
+- Run formatter: `npx prettier --check src/components/ src/pages/`
+- All should pass without errors
 
-#### 6.4 Verify Testing Coverage
-Check for test files alongside components:
-```bash
-# Verify test files exist
-ls src/components/**/*.test.tsx
-ls src/pages/**/*.test.tsx
-```
-- If missing, create basic test template (RTL + React Testing Library)
-- Test component rendering and user interactions
+#### 6.4 Component Testing
+For each integrated component:
+- Check if test file exists (`.test.tsx`)
+- If missing, create basic test structure
+- Test rendering and basic interactions
+- Verify component inputs/outputs work correctly
 
 ---
 
 ### Phase 7: Documentation & Verification
 
-#### 7.1 Generate Integration Summary
-Create `output/INTEGRATION_SUMMARY.md`:
+#### 7.1 Verify All Config Requirements Met
+Check completion checklist:
+```
+□ All componentMapping entries processed
+□ All .tsx files copied to target locations
+□ All imports updated to use @/ alias
+□ TypeScript validation passes (no errors)
+□ ESLint validation passes (no violations)
+□ All page components have routing entries
+□ All service files created or updated
+□ Context/Redux wiring complete
+□ Accessibility standards verified
+□ Tests exist for components
+```
+
+#### 7.2 Create Integration Summary Document
+Generate summary document at `output/audits/INTEGRATION_SUMMARY.md`:
+
 ```markdown
 # UX Screen Integration Summary
 
-**Date:** 2026-03-10  
-**Screens Integrated:** 8  
-**User Stories Covered:** 8/8 (100%)  
-**Test Coverage:** ✓ Passed  
+**Date:** [today's date]  
+**Project:** [from config.project.name]
+**Screens Integrated:** [count from componentMapping]  
+**User Stories Covered:** [count]/[total]
 
 ## Integrated Components
-- ✓ CardSearchInterface (US-01, US-02)
-- ✓ CardDetailView (US-03)
-- ✓ CardEditForm (US-04)
-- ✓ BulkActionsPanel (US-05)
-- ... (continue for all)
+[List each component from componentMapping]
+- ✓ [Component Name] ([user story IDs])
+- ✓ [Component Name] ([user story IDs])
 
-## API Endpoints Verified
-- ✓ GET /Blam/accounts/{name}
-- ✓ POST /Blam/search
-- ... (continue for all)
+## Routing Added
+[List each route from componentMapping with isPage: true]
+- [path] → [component name]
+- [path] → [component name]
+
+## Services Created
+[List each service from config.services]
+- [service name] → [endpoint]
+- [service name] → [endpoint]
+
+## Verification Results
+- TypeScript: ✓/✗
+- ESLint: ✓/✗
+- Test Coverage: [%]
+- Build Status: ✓/✗
 
 ## Issues Found & Resolution
-- [ ] Issue: CardSearch component using class component
-  - Resolution: Converted to arrow function, updated to FC type
-
-## Next Steps
-1. Run full test suite
-2. Test in browser with dev tools
-3. Code review by team lead
-4. Merge to main branch
+[Document any issues and how they were resolved]
 ```
 
-#### 7.2 Build & Test
+#### 7.3 Build & Verification
 ```bash
 # Build the app
 npm run build
 
-# Check for build errors
-echo $?  # Should output 0
-
-# Run all tests
+# Run tests
 npm run test -- --coverage
+
+# Run type checking
+npx tsc --noEmit
+
+# Run linting
+npx eslint src/components/ src/pages/
 ```
-- Flag any build warnings/errors
-- Verify test coverage ≥ 80%
-- No console errors in dev mode
+- All commands should complete without errors
+- No TypeScript errors
+- No ESLint violations
+- Test coverage should meet project standards
 
-#### 7.3 Component-to-User-Story Audit
-Verify each user story is implemented:
+#### 7.4 Component-to-User-Story Verification
+Create traceability matrix (can be in comment or document):
 ```
-✓ US-01 (Search Interface) → CardSearchInterface + SearchBar
-✓ US-02 (Results Table) → SearchResultsTable
-✓ US-03 (Card Details) → CardDetailView + DetailSections
-✓ US-04 (Edit Card) → CardEditForm + FieldInputs
-✓ US-05 (Bulk Operations) → BulkActionsPanel + ModalsDB
-✓ US-06 (Direct Deposit) → DirectDepositSection + DirectDepositModal
-✓ US-07 (Reset PIN) → ResetPinButton + ResetPinDialog
-✓ US-08 (Transaction History) → TransactionHistorySection + TransactionTable
+Component Name | User Stories | Routes | Status
+[from mapping] | [US IDs]     | [path] | ✓ Integrated
 ```
-- Create "Traceability Matrix" document linking components ↔ user stories
+- Verify every user story in componentMapping is represented
+- Verify every component is mapped to at least one user story
+- Document any unmapped components or user stories
 
-#### 7.4 Git Commit
-```bash
-git add src/components/ src/pages/ src/routes/ src/store/ src/services/
-git commit -m "feat: integrate UX screens for Card Maintenance System
+---
 
-- Integrated 8 screen components from UX repository
-- Wired routing, state management, and API calls
-- Mapped components to user stories (100% coverage)
-- Added accessibility attributes (WCAG AA)
-- All tests passing, build successful
+## Configuration Requirements
 
-Closes: [GitHub Issue or PR Number if applicable]
+**Must create `ux-integration-config.json` before running agent:**
 
-Components integrated:
-- CardSearchInterface (US-01, US-02)
-- CardDetailView (US-03)
-- CardEditForm (US-04)
-- BulkActionsPanel (US-05)
-- DirectDepositSection (US-06)
-- ResetPinButton (US-07)
-- TransactionHistorySection (US-08)
-- SearchResultsTable (US-02)
-"
-git push origin feature/integrate-ux-screens
-```
+| Section | Purpose | Required |
+|---------|---------|----------|
+| `project` | Project metadata | ✓ Yes |
+| `uxRepository` | Where to find UX components | ✓ Yes |
+| `componentMapping` | List of components to integrate | ✓ Yes |
+| `dependencies` | Expected versions (validation) | ✓ Yes |
+| `apiBasePattern` | API base URL for services | ✓ Yes |
+| `services` | API services to create | ✓ Yes |
 
 ---
 
 ## Error Handling & Edge Cases
 
 ### Scenario 1: Version Mismatch
-**Condition:** UX repo React v18, main repo React v19
-**Action:** Alert: "Cannot integrate - React version mismatch. Update UX repo to v19"
-**Recovery:** Manual coordination with UX team to update dependencies
+**Condition:** UX repo React version differs from config.dependencies
+**Action:** Alert and flag as incompatible
+**Recovery:** Coordinate with UX team to update versions
 
-### Scenario 2: Component Name Conflicts
-**Condition:** UX repo has `Button` component that conflicts with MUI Button
-**Action:**
-- Rename UX component: `CustomButton` instead of `Button`
-- Update all imports in copied files
-- Document rename in INTEGRATION_SUMMARY.md
+### Scenario 2: Component Not Found
+**Condition:** File specified in componentMapping.uxComponentPath doesn't exist
+**Action:** Alert: "Component not found at [path]"
+**Recovery:** Verify path in config matches actual file location
 
 ### Scenario 3: Missing User Story Mapping
-**Condition:** Screen exists but doesn't map to any user story
-**Action:**
-- Flag in mapping document with ⚠️ UNMAPPED
-- Require manual approval before integration
-- Alert: "Screen [ScreenName] has no user story mapping"
+**Condition:** Component in mapping has empty or missing userStories array
+**Action:** Flag with ⚠️ - require clarification
+**Recovery:** Update config.json with correct user story IDs
 
-### Scenario 4: API Endpoint Not Documented
-**Condition:** Component calls endpoint not in user stories (API/Data section)
-**Action:**
-- Log warning: "Component uses undocumented API: POST /Blam/customEndpoint"
-- Request API documentation from backend team
-- Proceed with caution, mark as "Requires Backend Verification"
+### Scenario 4: Import Path Failures
+**Condition:** Component imports fail after copying (missing dependencies, wrong paths)
+**Action:** Log error with line number
+**Recovery:** Fix imports manually or update source in UX repo
 
 ### Scenario 5: Build Failure
 **Condition:** `npm run build` fails with TypeScript errors
@@ -537,25 +606,54 @@ git push origin feature/integrate-ux-screens
 
 ## Inputs Expected
 
-UX team should:
-1. **Push updated screens** to: `C:\Users\2000181447\D\Projects\Corpay\Corpay-UI-Refresh`
-2. **Document screen mapping** with user story references
-3. **Update component acceptance criteria** (validation rules, API endpoints, etc.)
-4. **Ensure React 19.x and MUI 7.3.9** installed
+Before running this agent:
+
+1. **Create `ux-integration-config.json`** with:
+   - UX repository path and source folder
+   - Component mapping (source → target paths)
+   - Expected dependency versions
+   - API services configuration
+
+2. **Ensure UX repository is ready:**
+   - Components are in specified source folder
+   - All dependencies match config.dependencies
+   - Components use TypeScript
+   - Components export default or named functions
+
+3. **Ensure user stories are documented:**
+   - User story files exist in `user-stories/`
+   - Each story has clear acceptance criteria
+   - Component mapping references valid user story IDs
 
 Agent will:
-1. Pull latest changes from UX repo
-2. Copy components from `client/src/` to main repo `src/`
-3. Wire routing, state management, API integration
-4. Add/verify tests and accessibility
-5. Generate integration summary
+1. Validate UX repository and configuration
+2. Copy components per componentMapping
+3. Fix imports and validate TypeScript
+4. Wire routing, state management, API services
+5. Add tests and verify accessibility
+6. Generate integration summary
 
 The agent outputs:
 - Integrated components in `src/components/`, `src/pages/`
-- Updated `src/routes/route-config.tsx`
-- Updated Redux slices in `src/store/slices/`
-- Updated service files in `src/services/api/`
-- Integration Summary: `output/INTEGRATION_SUMMARY.md`
-- Component Mapping: `output/SCREEN_COMPONENT_MAPPING.md`
+- Updated routing configuration (`src/routes/`)
+- Updated/created service files (`src/services/api/`)
+- Updated state management if configured (`src/store/slices/`)
+- Integration Summary: `output/audits/INTEGRATION_SUMMARY.md`
 - Git commit ready to push
+
+---
+
+## When Agent Should NOT Modify Itself
+
+✅ **Configuration-driven:** All project-specific values come from `.github/agents/conf/ux-integration-config.json`
+✅ **Repeatable:** Running agent twice with same config produces same results
+✅ **No hardcoding:** No Card Maintenance, specific project names, or hardcoded paths
+✅ **Generic:** Works with ANY project that has valid config.json
+
+❌ **Agent modifications needed?** → Update config.json instead
+❌ **Component paths wrong?** → Fix in componentMapping in config.json
+❌ **API pattern different?** → Change apiBasePattern in config.json
+❌ **Dependency versions?** → Update dependencies section in config.json
+
+Every integration is controlled by **config.json**, not by editing this agent file.
 

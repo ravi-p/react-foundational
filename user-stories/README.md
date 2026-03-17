@@ -2,6 +2,16 @@
 
 This folder contains all user stories organized by feature area. Each feature area has an associated epic, acceptance criteria, and metadata for Jira integration.
 
+## Quick Start: Understanding Multi-Document Input
+
+📖 **New to this workflow?** Read [MULTI_DOCUMENT_INPUT_GUIDE.md](MULTI_DOCUMENT_INPUT_GUIDE.md) to understand how user stories are generated from four analysis documents (User Flows, Screen Inventory, Business Logic, and API Mapping).
+
+**Key Points:**
+- ✅ Stories are generated from multiple analysis documents, not manual creation
+- ✅ Stories include UI components, validation rules, and API endpoints
+- ✅ Update `config.json` to point to your project's analysis documents
+- ✅ Run `generate_user_stories` agent to create/update all stories
+
 ## Folder Structure
 
 ```
@@ -96,7 +106,29 @@ Each story file contains:
 
 ## Configuration
 
-See `config.json` for:
+**See `config.json` for all configuration options:**
+
+```json
+{
+  "project": { "name", "description" },
+  "analysisDocuments": {
+    "userFlows": "path/to/1_User_Flow_Document.md",
+    "screenInventory": "path/to/2_Screen_Inventory.md",
+    "businessLogic": "path/to/3_FE_Business_Logic_Document.md",
+    "apiMapping": "path/to/5_Backend_API_Call_Mapping.md"
+  },
+  "epics": [ { "name", "key", "folder", "description" } ],
+  "userRoles": ["Role1", "Role2"],
+  "apiBasePattern": "/api/v1",
+  "storyPointOptions": [3, 5, 8, 13],
+  "projectDomain": "domain-name",
+  "uiFramework": "Framework"
+}
+```
+
+**Important:** Update the `analysisDocuments` paths to match where your reverse_engineering outputs are located.
+
+## Configuration
 - Feature area mappings
 - Story file associations
 - Jira project keys per feature

@@ -1,0 +1,53 @@
+{
+  "project": {
+    "name": "Your Project Name",
+    "description": "Brief description of the project"
+  },
+  "uxRepository": {
+    "path": "C:\\path\\to\\external\\ux\\repo",
+    "sourceFolder": "client/src",
+    "refreshBranch": "main"
+  },
+  "componentMapping": [
+    {
+      "uxComponentPath": "components/search/SearchInterface.tsx",
+      "targetPath": "src/components/search/search-interface.tsx",
+      "userStories": ["US-01", "US-02"],
+      "isPage": false,
+      "route": null,
+      "description": "Search component for querying items"
+    },
+    {
+      "uxComponentPath": "pages/DetailPage.tsx",
+      "targetPath": "src/pages/detail-page.tsx",
+      "userStories": ["US-03"],
+      "isPage": true,
+      "route": {
+        "path": "/detail/:id",
+        "label": "Details",
+        "breadcrumbs": ["Home", "Details"]
+      },
+      "description": "Detail view for selected item"
+    }
+  ],
+  "dependencies": {
+    "react": "^19.0.0",
+    "typescript": "^5.0.0",
+    "@mui/material": "^7.3.9",
+    "react-router-v6": true,
+    "redux": false
+  },
+  "apiBasePattern": "/api/v1",
+  "services": [
+    {
+      "name": "search-service",
+      "endpoint": "/search",
+      "description": "Service for search operations"
+    },
+    {
+      "name": "item-service",
+      "endpoint": "/items",
+      "description": "Service for item operations"
+    }
+  ]
+}

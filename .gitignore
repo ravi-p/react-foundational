@@ -34,3 +34,13 @@ pnpm-debug.log*
 
 # OS
 Thumbs.db
+
+# 1. Ignore all contents of the output folders
+output/analysis/*
+output/audits/*
+user-stories/*
+
+# 2. Specifically allow (un-ignore) the README files
+!output/analysis/README.MD
+!output/audits/README.MD
+!user-stories/README.MD

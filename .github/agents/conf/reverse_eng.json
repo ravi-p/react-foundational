@@ -1,5 +1,5 @@
 {
-    "current_feature": "card-maintenance",
-    "legacy_jsp_path": "C:\\Users\\2000181447\\Downloads\\Blam(na-cp-domestic-icd-pci-new-card-maintenance-ui-main)\\na-cp-domestic-icd-pci-new-card-maintenance-ui-main\\src\\main\\webapp\\js\\card-maintenance",
-    "user_stories_path": "outputs/Migrated_User_Stories.md"
+    "current_feature": "<feature_name>",
+    "legacy_jsp_path": "<path_to_legacy_jsp>",
+    "output_path": "outputs/analysis"
 }

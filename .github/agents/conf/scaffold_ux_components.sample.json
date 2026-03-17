@@ -1,0 +1,120 @@
+{
+  "projectName": "React Foundational Dashboard",
+  "description": "A foundational dashboard with user management and reporting features",
+  "generateRedux": true,
+  "generateTests": true,
+  "generateServices": true,
+  "components": [
+    {
+      "name": "Dashboard",
+      "type": "page",
+      "description": "Main dashboard with overview metrics and quick actions",
+      "userStories": ["DASH-01"],
+      "state": [
+        "metrics: DashboardMetrics",
+        "loading: boolean",
+        "error?: string"
+      ],
+      "apis": ["dashboardService"],
+      "route": "/dashboard",
+      "requiresAuth": true,
+      "icon": "Dashboard"
+    },
+    {
+      "name": "UserList",
+      "type": "page",
+      "description": "Display users with search, filter, and pagination",
+      "userStories": ["USER-01"],
+      "state": [
+        "users: User[]",
+        "totalCount: number",
+        "page: number",
+        "pageSize: number",
+        "searchQuery: string",
+        "loading: boolean"
+      ],
+      "apis": ["userService"],
+      "route": "/users",
+      "requiresAuth": true,
+      "icon": "People"
+    },
+    {
+      "name": "UserForm",
+      "type": "component",
+      "description": "Form to create/edit user information",
+      "userStories": ["USER-02", "USER-03"],
+      "props": [
+        "user?: User",
+        "onSubmit: (data: UserData) => Promise<void>",
+        "loading?: boolean"
+      ],
+      "state": [
+        "formData: UserData",
+        "validationErrors: Record<string, string>",
+        "submitting: boolean"
+      ],
+      "apis": ["userService"]
+    },
+    {
+      "name": "UserDetail",
+      "type": "page",
+      "description": "Detailed user view with edit capability",
+      "userStories": ["USER-04"],
+      "props": [
+        "userId: string"
+      ],
+      "state": [
+        "user: User",
+        "loading: boolean",
+        "editMode: boolean"
+      ],
+      "apis": ["userService"],
+      "route": "/users/:userId",
+      "requiresAuth": true
+    },
+    {
+      "name": "ReportBuilder",
+      "type": "page",
+      "description": "Create and customize reports",
+      "userStories": ["REPORT-01"],
+      "state": [
+        "reportConfig: ReportConfig",
+        "previewData: any[]",
+        "generating: boolean"
+      ],
+      "apis": ["reportService"],
+      "route": "/reports/builder",
+      "requiresAuth": true,
+      "icon": "Assessment"
+    },
+    {
+      "name": "ReportViewer",
+      "type": "component",
+      "description": "Display report with charts and tables",
+      "userStories": ["REPORT-02"],
+      "props": [
+        "reportData: ReportData",
+        "exportable?: boolean"
+      ],
+      "state": [
+        "selectedChartType: 'bar' | 'line' | 'pie'",
+        "exporting?: boolean"
+      ]
+    },
+    {
+      "name": "SettingsPanel",
+      "type": "page",
+      "description": "User and application settings",
+      "userStories": ["SETTINGS-01"],
+      "state": [
+        "settings: AppSettings",
+        "loading: boolean",
+        "saved: boolean"
+      ],
+      "apis": ["settingsService"],
+      "route": "/settings",
+      "requiresAuth": true,
+      "icon": "Settings"
+    }
+  ]
+}

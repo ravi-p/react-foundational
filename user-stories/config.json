@@ -1,43 +1,47 @@
 {
-  "version": "1.0",
-  "description": "User Stories Configuration - Feature-based Organization with Jira Integration",
-  "features": [
+  "project": {
+    "name": "Transaction Categorizer",
+    "description": "A React-based application that helps users upload bank statements, categorize transactions, and view results organized by category hierarchy."
+  },
+  "analysisDocuments": {
+    "userFlows": "output/analysis/1_User_Flow_Document.md",
+    "screenInventory": "output/analysis/2_Screen_Inventory.md",
+    "businessLogic": "output/analysis/3_FE_Business_Logic_Document.md",
+    "apiMapping": "output/analysis/5_Backend_API_Call_Mapping.md"
+  },
+  "epics": [
     {
-      "id": "00",
-      "name": "Search & Manage Cards",
-      "key": "CARDS",
-      "description": "Core functionality for searching, viewing, and managing card information",
-      "stories": [
-        "01-card-search-interface.md",
-        "02-search-results-table.md",
-        "03-view-card-details.md",
-        "04-edit-card-information.md",
-        "05-bulk-operations.md"
-      ]
+      "name": "Excel File Upload",
+      "key": "upload",
+      "folder": "00-excel-file-upload",
+      "description": "Allow users to upload bank statement Excel files and process them"
     },
     {
-      "id": "01",
-      "name": "Card Features",
-      "key": "FEAT",
-      "description": "Feature-specific functionality and requirements",
-      "stories": [
-        "06-direct-deposit-management.md"
-      ]
+      "name": "Manual Transaction Entry",
+      "key": "manual-entry",
+      "folder": "01-manual-transaction-entry",
+      "description": "Enable users to manually add transactions with description and amount"
     },
     {
-      "id": "02",
-      "name": "Administrative Tasks",
-      "key": "ADMIN",
-      "description": "Administrative operations and card management tasks",
-      "stories": [
-        "07-reset-card-pin.md",
-        "08-view-card-transaction-history.md"
-      ]
+      "name": "View Grouped Transactions",
+      "key": "view-grouped",
+      "folder": "02-view-grouped-transactions",
+      "description": "Display transactions organized by category and subcategory hierarchy"
+    },
+    {
+      "name": "Transaction Management",
+      "key": "manage-tx",
+      "folder": "03-transaction-management",
+      "description": "View all transactions in table format with category details"
     }
   ],
-  "metadata": {
-    "createdAt": "2026-03-11",
-    "lastUpdated": "2026-03-11",
-    "totalStories": 8
-  }
+  "userRoles": [
+    "User",
+    "Bank Statement Manager",
+    "Data Analyst"
+  ],
+  "apiBasePattern": "/api",
+  "storyPointOptions": [3, 5, 8, 13],
+  "projectDomain": "financial-transaction-management",
+  "uiFramework": "React/Bootstrap"
 }

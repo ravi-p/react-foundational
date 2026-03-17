@@ -5,12 +5,39 @@ You are an expert Enterprise Architect specializing in migrating legacy Java/Ang
 ## Context & Inputs
 - **Feature/Module Name:** [transaction-categorization-main]
 - **Entry File/Folder Path:** [C:\Users\2000181447\Downloads\transaction-categorization-main\transaction-categorization-main]
- 
+- **README.md:** Check for presence at root of Entry File/Folder Path before analysis
+
 ---
  
 ## Your Execution Steps & Required Outputs
- 
-You must thoroughly crawl the provided angular file(s),
+
+### STEP 0: Check for and Read README.md (If Present)
+
+⚠️ **CRITICAL FIRST STEP**
+
+Before analyzing the codebase, check if a **README.md** file exists at the root of the provided folder path:
+- Check: `[Entry File/Folder Path]/README.md`
+- If found: Read and extract:
+  - Project purpose and overview
+  - Technology stack and framework version
+  - Setup and installation instructions
+  - Key features and module descriptions
+  - Architecture and folder structure explanation
+  - Known limitations or important notes
+  - Dependencies and external integrations
+  - Any mentioned APIs or backend services
+
+**Use README.md as context** for:
+- Understanding the overall project purpose (enriches User Flow Document)
+- Identifying tech stack and frameworks (enriches Screen Inventory)
+- Clarifying business rules and requirements (enriches FE Business Logic Document)
+- Understanding deployment and integration points (enriches Backend API Call Mapping)
+
+**If README.md is NOT found:** Proceed directly to Step 1 with codebase analysis.
+
+---
+
+You must thoroughly crawl the provided angular file(s), extracting all relevant information about the user flows, UI components, frontend logic, state management, and backend API interactions. Based on this analysis combined with any README.md context, you will generate 6 separate documents as outlined below.
  
 Based on your analysis, you MUST generate the following **6 separate documents**.
  
@@ -56,29 +83,50 @@ Provide a high-level architectural view of how these specific pages and endpoint
  
 **DO NOT combine all 6 documents into a single consolidated file.**
  
-You MUST create exactly **6 separate Markdown files** in the output directory—one file per document. Do NOT just print the response in the chat window.
+You MUST create exactly **6 separate Markdown files** in the `../../output/analysis` directory—one file per document. Do NOT just print the response in the chat window.
  
 ### File Generation Requirements
  
 Each document MUST be saved as an individual .md file using the `create_file` tool with these exact paths:
  
-1. **File 1:** `output/1_User_Flow_Document.md`
+1. **File 1:** `output/analysis/1_User_Flow_Document.md`
    - Content: Complete User Flow Document with all flows and error scenarios
  
-2. **File 2:** `output/2_Screen_Inventory.md`
+2. **File 2:** `output/analysis/2_Screen_Inventory.md`
    - Content: Complete Screen Inventory with all UI components, forms, and buttons
  
-3. **File 3:** `output/3_FE_Business_Logic_Document.md`
+3. **File 3:** `output/analysis/3_FE_Business_Logic_Document.md`
    - Content: Complete Frontend Business Logic with validation rules and constraints
  
-4. **File 4:** `output/4_UI_State_and_Session_Handling.md`
+4. **File 4:** `output/analysis/4_UI_State_and_Session_Handling.md`
    - Content: Complete UI State Management documentation with session variables and form states
  
-5. **File 5:** `output/5_Backend_API_Call_Mapping.md`
+5. **File 5:** `output/analysis/5_Backend_API_Call_Mapping.md`
    - Content: Complete API endpoint mapping with all 40+ endpoints documented
  
-6. **File 6:** `output/6_Site_Map_Architecture_Diagram.md`
+6. **File 6:** `output/analysis/6_Site_Map_Architecture_Diagram.md`
    - Content: Complete Site Map with Mermaid architecture diagrams and system overview
+
+### README.md Integration Guidelines
+
+If README.md was found and read, incorporate its findings into your documents:
+
+| Document | README.md Context to Incorporate |
+|----------|-----------------------------------|
+| **1_User_Flow_Document.md** | Add project context/overview; mention user personas/roles described in README |
+| **2_Screen_Inventory.md** | Include framework/technology stack info from README; reference UI library versions |
+| **3_FE_Business_Logic_Document.md** | Add business domain context; clarify requirements mentioned in README setup/features |
+| **4_UI_State_and_Session_Handling.md** | Reference deployment/runtime info from README (session handling, cookies, etc.) |
+| **5_Backend_API_Call_Mapping.md** | Include API base URL pattern mentioned in README; note external integrations |
+| **6_Site_Map_Architecture_Diagram.md** | Add high-level architecture description from README; show technology stack |
+
+**In each document header section, add:**
+```markdown
+**Project Context (from README.md):**
+[Brief one-line summary of what README says project does]
+```
+
+---
  
 ### Creation Method
  
@@ -86,7 +134,7 @@ Use the `create_file` tool to create each file separately with full formatted co
  
 **Example File Structure:**
  
-**File: output/1_User_Flow_Document.md**
+**File: output/analysis/1_User_Flow_Document.md**
 ```markdown
 # User Flow Document: Card Maintenance System
  
@@ -97,7 +145,7 @@ Use the `create_file` tool to create each file separately with full formatted co
 (full content here...)
 ```
  
-**File: output/2_Screen_Inventory.md**
+**File: output/analysis/2_Screen_Inventory.md**
 ```markdown
 # Screen Inventory: Card Maintenance System
  

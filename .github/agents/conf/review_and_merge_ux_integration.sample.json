@@ -1,0 +1,26 @@
+{
+  "projectName": "React Foundational",
+  "description": "A foundational React app with Material UI, Redux Toolkit, and TypeScript",
+  "reduxSlices": [
+    {
+      "name": "appSlice",
+      "description": "Global application state",
+      "hasThunk": false
+    }
+  ],
+  "apiServices": [
+    {
+      "name": "exampleService",
+      "description": "Example API service for demonstration"
+    }
+  ],
+  "userStories": [
+    {
+      "id": "DEMO-01",
+      "title": "Example Feature",
+      "status": "Complete",
+      "components": ["ExampleComponent"],
+      "notes": "Demo feature for testing integration"
+    }
+  ]
+}
