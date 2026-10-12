@@ -1,4 +1,4 @@
-# Comdata iConnectData - Card Management System
+#  Card Management System
 
 ## Project Overview
 
